@@ -1,8 +1,38 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
+import axios from 'axios';
 
 const HomePage = () => {
     const mapContainerRef = useRef(null);
+
+    const [nodeData, setNodeData] = useState({});
+    const [nodeType, setNodeType] = useState({});
+
+    const nodeTypes = {
+        'WM-WF-PH01-00': 'Shenitek',
+        'WM-WF-PH03-00': 'Shenitek',
+        'WM-WF-PH03-01': 'Shenitek',
+        'WM-WF-PH03-02': 'Shenitek',
+        'WM-WF-PH03-03': 'Shenitek',
+        'WM-WF-VN01-00': 'Shenitek',
+        'WM-WF-PH02-70': 'RF',
+        'WM-WF-KB04-71': 'RF',
+        'WM-WF-KB04-72': 'RF',
+        'WM-WF-KB04-73': 'RF',
+        'WM-WF-PL00-70': 'RF',
+        'WM-WF-PL00-71': 'RF',
+        'WM-WF-PR00-70': 'RF',
+        'WM-WF-PH04-70': 'RF',
+        'WM-WF-PH04-71': 'RF',
+        'WM-WF-BB04-70': 'RF',
+        'WM-WF-BB04-71': 'RF',
+        'WM-WF-VN04-70': 'RF',
+        'WM-WF-VN04-71': 'RF',
+        'WM-WF-PH04-50': 'Kritsnam',
+        'WM-WF-PR00-50': 'Kritsnam',
+        'WM-WF-PL00-50': 'Kritsnam',
+        'WM-WF-BB04-50': 'Kritsnam'
+      };
 
     useEffect(() => {
         const map = new mapboxgl.Map({
@@ -74,8 +104,23 @@ const HomePage = () => {
             });
         });
 
+        async function fetchNodeDataAndType() {
+            try {
+                const nodeDataResponse = await axios.get('http://localhost:8080/api/getNodeData');
+                setNodeData(nodeDataResponse.data);
+                console.log(nodeDataResponse.data);
+            } catch (error) {
+                console.error('Error fetching node data and type:', error);
+            }
+        }
 
-        return () => map.remove();
+        fetchNodeDataAndType();
+        const intervalId = setInterval(fetchNodeDataAndType, 30000);
+
+        return () => {
+            clearInterval(intervalId); // Cleanup interval on unmount
+            map.remove(); // Remove map instance on unmount
+        };
     }, []);
 
     return (
