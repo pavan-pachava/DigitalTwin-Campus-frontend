@@ -61,7 +61,7 @@ const HomePage = () => {
             },
             'paint': {
                 'line-color': 'red',
-                'line-width': 5,
+                'line-width': 3,
                 'line-blur': 1.5
             }
         });
@@ -92,7 +92,7 @@ const HomePage = () => {
             },
             'paint': {
                 'line-color': 'magenta',
-                'line-width': 5,
+                'line-width': 3,
                 'line-blur': 1.5
             }
         });
@@ -203,43 +203,21 @@ const HomePage = () => {
             markers.forEach((marker, index) => {
                 // Add marker to map
                 const mapMarker = new mapboxgl.Marker().setLngLat(marker.coordinates).addTo(map);
-
-                // Add popup to marker
-                const popup = new mapboxgl.Popup({ offset: 25 }).setText(marker.label);
+            
+                // Dynamically set popup content based on fetched node data
+                const nodeDetails = nodeData[marker.label];
+                let popupContent = `
+                <h3>${marker.label}</h3>
+                <p>Type: ${nodeTypes[marker.label]}</p>
+                <p>Latitude: ${marker.coordinates[1]}</p>
+                <p>Longitude: ${marker.coordinates[0]}</p>
+                
+                `; 
+            
+            
+                // Create a popup with dynamic content
+                const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(popupContent);
                 mapMarker.setPopup(popup);
-
-
-                // If this is not the last marker, add a line to the next marker
-                // if (index < markers.length - 1) {
-                //     const lineCoordinates = [marker.coordinates, markers[index + 1].coordinates];
-
-                //     map.addSource('line' + index, {
-                //         'type': 'geojson',
-                //         'data': {
-                //             'type': 'Feature',
-                //             'properties': {},
-                //             'geometry': {
-                //                 'type': 'LineString',
-                //                 'coordinates': lineCoordinates
-                //             }
-                //         }
-                //     });
-
-                //     map.addLayer({
-                //         'id': 'line' + index,
-                //         'type': 'line',
-                //         'source': 'line' + index,
-                //         'layout': {
-                //             'line-join': 'round',
-                //             'line-cap': 'round'
-                //         },
-                //         'paint': {
-                //             'line-color': 'black',
-                //             'line-width': 5,
-                //             'line-blur': 1.5
-                //         }
-                //     });
-                // }
             });
 
             drawRedLine(map, [78.35161904598921, 17.44560479017388], [78.35162904114092, 17.44561754773665], 'line1-2');
