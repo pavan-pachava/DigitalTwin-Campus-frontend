@@ -4,8 +4,9 @@ import axios from 'axios';
 
 const HomePage = () => {
     const mapContainerRef = useRef(null);
+    const map = useRef(null);
+    const markers = useRef([]);
 
-<<<<<<< HEAD
     const [nodeData, setNodeData] = useState({});
     const [nodeType, setNodeType] = useState({});
 
@@ -34,7 +35,7 @@ const HomePage = () => {
         'WM-WF-PL00-50': 'Kritsnam',
         'WM-WF-BB04-50': 'Kritsnam'
       };
-=======
+
     const drawRedLine = (map, coordinates1, coordinates2, lineId) => {
         const lineCoordinates = [coordinates1, coordinates2];
 
@@ -65,7 +66,103 @@ const HomePage = () => {
             }
         });
     };
->>>>>>> d7a14de (added pipes)
+
+    const drawPinkLine = (map, coordinates1, coordinates2, lineId) => {
+        const lineCoordinates = [coordinates1, coordinates2];
+
+        map.addSource(lineId, {
+            'type': 'geojson',
+            'data': {
+                'type': 'Feature',
+                'properties': {},
+                'geometry': {
+                    'type': 'LineString',
+                    'coordinates': lineCoordinates
+                }
+            }
+        });
+
+        map.addLayer({
+            'id': lineId,
+            'type': 'line',
+            'source': lineId,
+            'layout': {
+                'line-join': 'round',
+                'line-cap': 'round'
+            },
+            'paint': {
+                'line-color': 'magenta',
+                'line-width': 5,
+                'line-blur': 1.5
+            }
+        });
+    };
+
+    const isInsideLineSegment = (lngLat) => {
+        const redLineSegments = [
+            [[78.35161904598921, 17.44560479017388], [78.35162904114092, 17.44561754773665]],
+            [[78.35162904114092, 17.44561754773665], [78.35093659211216, 17.44650724089774]],
+            // Add more red line segments here
+        ];
+    
+        const PinkLineSegments = [
+            [[78.35016321247491, 17.44725614935155], [78.34980064440764, 17.4469116293489]],
+            [[78.34980064440764, 17.4469116293489], [78.34956370897714, 17.44656792211732]],
+            // Add more pink line segments here
+        ];
+    
+        const checkInsideSegment = (segment, lngLat) => {
+            const [lng1, lat1] = segment[0];
+            const [lng2, lat2] = segment[1];
+            const lng = lngLat.lng;
+            const lat = lngLat.lat;
+            const minX = Math.min(lng1, lng2);
+            const maxX = Math.max(lng1, lng2);
+            const minY = Math.min(lat1, lat2);
+            const maxY = Math.max(lat1, lat2);
+            return lng >= minX && lng <= maxX && lat >= minY && lat <= maxY;
+        };
+    
+        // Check if the point is inside any of the red line segments
+        for (const segment of redLineSegments) {
+            if (checkInsideSegment(segment, lngLat)) {
+                return true;
+            }
+        }
+    
+        // Check if the point is inside any of the pink line segments
+        for (const segment of PinkLineSegments) {
+            if (checkInsideSegment(segment, lngLat)) {
+                return true;
+            }
+        }
+    
+        return false;
+    };
+    
+
+    const addMarker = (lngLat) => {
+        const marker = new mapboxgl.Marker({
+            draggable: true
+        })
+            .setLngLat(lngLat)
+            .addTo(map.current);
+    
+        markers.current.push(marker);
+        
+        const popupContent = document.createElement('div');
+        popupContent.innerHTML = `<div><div>Latitude: ${lngLat.lat.toFixed(6)}<br />Longitude: ${lngLat.lng.toFixed(6)}</div> <button class="removeMarkerBtn">Remove Marker</button></div>`;
+        const popup = new mapboxgl.Popup({ offset: 25 })
+            .setDOMContent(popupContent)
+            .setMaxWidth("300px");
+    
+        marker.setPopup(popup);
+    
+        popupContent.querySelector('.removeMarkerBtn').addEventListener('click', () => {
+            marker.remove();
+        });
+    };
+
 
     useEffect(() => {
         const map = new mapboxgl.Map({
@@ -145,17 +242,6 @@ const HomePage = () => {
                 // }
             });
 
-<<<<<<< HEAD
-        async function fetchNodeDataAndType() {
-            try {
-                const nodeDataResponse = await axios.get('http://localhost:8080/api/getNodeData');
-                setNodeData(nodeDataResponse.data);
-                console.log(nodeDataResponse.data);
-            } catch (error) {
-                console.error('Error fetching node data and type:', error);
-            }
-        }
-=======
             drawRedLine(map, [78.35161904598921, 17.44560479017388], [78.35162904114092, 17.44561754773665], 'line1-2');
             drawRedLine(map, [78.35162904114092, 17.44561754773665], [78.35093659211216, 17.44650724089774], 'line2-4');
             drawRedLine(map, [78.35161904598921, 17.44560479017388], [78.35106374683362, 17.44587288707581], 'line1-3');
@@ -172,9 +258,41 @@ const HomePage = () => {
             drawRedLine(map, [78.34877336913988, 17.44319980391064], [78.34888555265366, 17.44310957644382], 'line15-16');
             drawRedLine(map, [78.349733, 17.447004], [78.34937931454236, 17.44629064408088], 'line17-18');
             drawRedLine(map, [78.34937931454236, 17.44629064408088], [78.34932388168806, 17.44619581644029], 'line18-19');
+            drawPinkLine(map, [78.35016321247491, 17.44725614935155], [78.34980064440764, 17.4469116293489], 'line20-21');
+            drawPinkLine(map, [78.34980064440764, 17.4469116293489], [78.34956370897714, 17.44656792211732], 'line21-22');
+            drawPinkLine(map, [78.34956370897714, 17.44656792211732], [78.34931944970312, 17.4462383264185], 'line22-23');
+            drawPinkLine(map, [78.34931944970312, 17.4462383264185], [78.34916230221518, 17.44799796181944], 'line23-24');
+            drawPinkLine(map, [78.34916230221518, 17.44799796181944], [78.34918109914895, 17.44770219232684], 'line24-25');
+            drawPinkLine(map, [78.34918109914895, 17.44770219232684], [78.34802284075113, 17.4473223396666], 'line25-26');
+            drawPinkLine(map, [78.34802284075113, 17.4473223396666], [78.34720881116223, 17.44643757656301], 'line26-27');
+            drawPinkLine(map, [78.34720881116223, 17.44643757656301], [78.34730307981043, 17.44636718517568], 'line27-28');
+            drawPinkLine(map, [78.34730307981043, 17.44636718517568], [78.34703792307027, 17.44533783819821], 'line28-29');
+            drawPinkLine(map, [78.34703792307027, 17.44533783819821], [78.34669319523402, 17.44563193128936], 'line29-30');
+            drawPinkLine(map, [78.34669319523402, 17.44563193128936], [78.34649889436822, 17.44517704565986], 'line30-31');
+            drawPinkLine(map, [78.34649889436822, 17.44517704565986], [78.34652744202683, 17.44516754063333], 'line31-32');
+            drawPinkLine(map, [78.34652744202683, 17.44516754063333], [78.3465254258933, 17.44520343837285], 'line32-33');
+            drawPinkLine(map, [78.3465254258933, 17.44520343837285], [78.34671876296252, 17.4450003113143], 'line33-34');
+            drawPinkLine(map, [78.34671876296252, 17.4450003113143], [78.34658384403653, 17.44464351161669], 'line34-35');
+            drawPinkLine(map, [78.34658384403653, 17.44464351161669], [78.34728818452135, 17.44449273534782], 'line35-36');
+            drawPinkLine(map, [78.34728818452135, 17.44449273534782], [78.34625706807689, 17.44489905957709], 'line36-37');
+            drawPinkLine(map, [78.34625706807689, 17.44489905957709], [78.34623788829117, 17.44494037365051], 'line37-38');
+            drawPinkLine(map, [78.34623788829117, 17.44494037365051], [78.34550467038528, 17.44492299837197], 'line38-39');
+            drawPinkLine(map, [78.34550467038528, 17.44492299837197], [78.34546248141159, 17.44491166934417], 'line39-40');
+            drawPinkLine(map, [78.34546248141159, 17.44491166934417], [78.34529939255805, 17.44506504305603], 'line40-41');
+            drawPinkLine(map, [78.34529939255805, 17.44506504305603], [78.34623947579716, 17.44487839948707], 'line41-42');
+
             
         });
->>>>>>> d7a14de (added pipes)
+
+        async function fetchNodeDataAndType() {
+            try {
+                const nodeDataResponse = await axios.get('http://localhost:8080/api/getNodeData');
+                setNodeData(nodeDataResponse.data);
+                console.log(nodeDataResponse.data);
+            } catch (error) {
+                console.error('Error fetching node data and type:', error);
+            }
+        }
 
         fetchNodeDataAndType();
         const intervalId = setInterval(fetchNodeDataAndType, 30000);
@@ -183,11 +301,14 @@ const HomePage = () => {
             clearInterval(intervalId); // Cleanup interval on unmount
             map.remove(); // Remove map instance on unmount
         };
+
     }, []);
+
+    
 
     return (
         <div>
-            <div ref={mapContainerRef} style={{ width: '100%', height: '800px' }} />
+            <div ref={mapContainerRef} style={{ width: '100%', height: '900px' }} />
         </div>
     );
 };
