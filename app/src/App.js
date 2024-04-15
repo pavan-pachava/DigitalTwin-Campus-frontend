@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 // import { BrowserRouter as Router, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
+import Page2 from './pages/Page2';
 // import { MapContainer, TileLayer, Polyline, Marker, Popup, Polygon, Rectangle } from 'react-leaflet';
 // import 'leaflet/dist/leaflet.css';
 // import CustomCircleMarker from './components/CustomCircleMarker';
@@ -18,6 +19,7 @@ function App(){
     <>
     <Routes>
       <Route path='/' element={<HomePage />} />
+      <Route path="/page2" element={<Page2 />} />
     </Routes>
     </>
   )

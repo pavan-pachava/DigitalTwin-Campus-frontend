@@ -100,56 +100,64 @@ const HomePage = () => {
     };
 
     const addMarker = (lngLat) => {
-
-        // write a axios posr request to send the new marker latitude longitude to the server
+        // Write an axios post request to send the new marker latitude longitude to the server
         axios.post('http://localhost:8080/api/setPredictionPoints', {
             latitude: lngLat.lat,
             longitude: lngLat.lng
         })
-            .then((response) => {
-                console.log(response);
-            }, (error) => {
-                console.log(error);
-            });
-        var predValue;
-
-        // write a axios get request to get the predicted value of the marker from the backend
+        .then((response) => {
+            console.log(response);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    
+        // Write an axios get request to get the predicted value of the marker from the backend
         axios.get('http://localhost:8080/api/getPredictedVal')
-            .then((response) => {
-
-                predValue = response.data;
-                const markerNumber = markers.current.length + 1; // Assigning a number to the marker
-                console.log("pred val = ", predValue);
-
-                const marker = new mapboxgl.Marker({
-                    draggable: true
-                })
-                    .setLngLat(lngLat)
-                    .addTo(map.current);
-
-                markers.current.push({ marker, number: markerNumber }); // Pushing marker object along with its number
-
-                const nodeLabel = `Virtual Node - ${markerNumber}`; // Example label for the new marker
-                // const nodeDetails = predValue[nodeLabel];
-                let popupContent = `
-            <h3>${nodeLabel}</h3>
-            <p>Latitude: ${lngLat.lat}</p>
-            <p>Longitude: ${lngLat.lng}</p>
-            <p>Predicted Water flow rate: ${predValue}</p>
-        `;
-                const popup = new mapboxgl.Popup({ offset: 25 })
-                    .setHTML(popupContent)
-                    .setMaxWidth("300px");
-
-                marker.setPopup(popup);
-                return markerNumber;
-
-
-            }, (error) => {
-                console.log(error);
+        .then((response) => {
+            const predValue = response.data;
+            const markerNumber = markers.current.length + 1;
+    
+            console.log("pred val = ", predValue);
+    
+            const marker = new mapboxgl.Marker({
+                draggable: true
+            })
+            .setLngLat(lngLat)
+            .addTo(map.current);
+    
+            const nodeLabel = `Virtual Node - ${markerNumber}`;
+            let popupContent = `
+                <h3>${nodeLabel}</h3>
+                <p>Latitude: ${lngLat.lat}</p>
+                <p>Longitude: ${lngLat.lng}</p>
+                <p>Predicted Water flow rate: ${predValue}</p>
+            `;
+    
+            const popup = new mapboxgl.Popup({ offset: 25 })
+            .setHTML(popupContent)
+            .setMaxWidth("300px");
+    
+            // Add popup to marker
+            marker.setPopup(popup);
+    
+            // Show popup when hovering over the marker
+            marker._element.addEventListener('mouseenter', () => {
+                marker.togglePopup();
             });
-
+    
+            // Hide popup when mouse leaves the marker
+            marker._element.addEventListener('mouseleave', () => {
+                marker.togglePopup();
+            });
+    
+            markers.current.push({ marker, number: markerNumber });
+        })
+        .catch((error) => {
+            console.log(error);
+        });
     };
+    
 
 
 
