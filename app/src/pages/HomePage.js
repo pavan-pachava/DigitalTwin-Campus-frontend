@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import axios from 'axios';
+import NavigationBar from '../Navigation/Navigation';
 
 
 const HomePage = () => {
@@ -92,7 +93,7 @@ const HomePage = () => {
                 'line-cap': 'round'
             },
             'paint': {
-                'line-color': 'magenta',
+                'line-color': 'orange',
                 'line-width': 5,
                 'line-blur': 1.5
             }
@@ -227,7 +228,7 @@ const HomePage = () => {
                 { coordinates: [78.349745, 17.44511], label: 'WM-WF-BB04-50' },
             ];
 
-            var nodeDataResponse;
+            
 
             drawRedLine(map, [78.35161904598921, 17.44560479017388], [78.35162904114092, 17.44561754773665], 'line1-2');
             drawRedLine(map, [78.35162904114092, 17.44561754773665], [78.35093659211216, 17.44650724089774], 'line2-4');
@@ -291,8 +292,24 @@ const HomePage = () => {
 
     }, [nodeData]);
 
+    var nodeDataResponse;
+    async function fetchNodeDataAndType() {
+        try {
+            nodeDataResponse = await axios.get('http://localhost:8080/api/getNodeData');
+            setNodeData(nodeDataResponse.data);
+            console.log(nodeDataResponse.data);
+            return nodeDataResponse.data;
+        } catch (error) {
+            console.error('Error fetching node data and type:', error);
+            return null
+        }
+    }
+
+
     const updatePopups = async (map, markers, nodeData) => {
         try {
+            const nodeData = fetchNodeDataAndType();
+
             markers.forEach((marker, index) => {
                 // Check if marker already exists
                 if (!marker.hasOwnProperty('mapMarker')) {
@@ -307,7 +324,7 @@ const HomePage = () => {
                     <p>Type: ${nodeTypes[marker.label]}</p>
                     <p>Latitude: ${marker.coordinates[1]}</p>
                     <p>Longitude: ${marker.coordinates[0]}</p>
-                    <p>Water flow rate: ${nodeDetails ? nodeDetails[2] : 'No available currently'}</p>
+                    <p>Water flow rate: ${nodeDetails ? nodeDetails[2] : 'Not available currently'}</p>
                 `;
     
                 // Add popup to marker
@@ -339,10 +356,12 @@ const HomePage = () => {
     // Render the marker list
     return (
         <div>
-            <div ref={mapContainerRef} style={{ width: '100%', height: '900px' }} />
+            <NavigationBar/>
+            <h1 style={{ textAlign: 'center' }}>Digital Twin Water Simulation</h1>
+            <div ref={mapContainerRef} style={{ width: '100%', height: '860px' }} />
             {renderedMarkerList}
         </div>
     );
 };
 
-export default HomePage;
+export default HomePage;

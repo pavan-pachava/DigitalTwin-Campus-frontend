@@ -1,0 +1,93 @@
+/* Base styles for larger screens */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #123462;
+    color: white;
+    padding: 10px 20px;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar__logo {
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.navbar__logo img {
+    width: 50px;
+    height: auto;
+    margin-right: 15px;
+}
+
+.navbar__dashboard {
+    font-size: 1.5rem;
+    flex-grow: 1;
+    text-align: center;
+}
+
+.navbar__button {
+    margin: 0 10px;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .navbar__button:hover {
+    background-color: #555;
+  }
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: center;
+        padding: 10px 0;
+    }
+
+    .navbar__logo {
+        margin-bottom: 10px;
+    }
+
+    .navbar__logo img {
+        margin-right: 0;
+    }
+}
+
+/* Common styles for all screen sizes */
+.navbar {
+    background-color: #333;
+    color: white;
+    padding: 10px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar__logo {
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.navbar__logo img {
+    width: 80px;
+    height: auto;
+    margin-right: 15px;
+}
+
+.navbar__dashboard {
+    font-size: 1.5rem;
+    flex-grow: 1;
+    text-align: center;
+}

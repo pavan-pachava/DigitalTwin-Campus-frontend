@@ -1,0 +1,17 @@
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Creates two columns */
+    grid-gap: 10px; /* Spacing between frames */
+  }
+  
+  .grid-item {
+    width: 100%;
+    height: 680px; /* Adjust the height as needed */
+  }
+  
+  iframe {
+    width: 100%; /* Makes the iframe responsive within the grid */
+    height: 100%;
+    justify-content: center;
+  }
+  
