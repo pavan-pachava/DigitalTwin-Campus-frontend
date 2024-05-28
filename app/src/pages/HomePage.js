@@ -290,7 +290,7 @@ const HomePage = () => {
 
         });
 
-    }, [nodeData]);
+    }, []);
 
     var nodeDataResponse;
     async function fetchNodeDataAndType() {
@@ -308,7 +308,7 @@ const HomePage = () => {
 
     const updatePopups = async (map, markers, nodeData) => {
         try {
-            const nodeData = fetchNodeDataAndType();
+            const nodeData = await fetchNodeDataAndType();
 
             markers.forEach((marker, index) => {
                 // Check if marker already exists
